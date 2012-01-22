@@ -41,6 +41,7 @@ class pyeval(znc.Module, InteractiveInterpreter):
 
     def OnModCommand(self, line):
         self.locals['client'] = self.GetClient()
+        self.locals['network'] = self.GetNetwork()
 
         # Hijack sys.stdout.write
         stdout_write = sys.stdout.write
@@ -57,4 +58,5 @@ class pyeval(znc.Module, InteractiveInterpreter):
         # Revert sys.stdout.write
         sys.stdout.write = stdout_write
         del self.locals['client']
+        del self.locals['network']
 
