@@ -22,5 +22,5 @@ public:
 	}
 };
 
-USERMODULEDEFS(CPrivMsgMod, "Send privmsgs")
+USERMODULEDEFS(CPrivMsgMod, "Send outgoing privmsgs to other clients")
 
