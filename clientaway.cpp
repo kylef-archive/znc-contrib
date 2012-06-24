@@ -94,7 +94,7 @@ public:
 
 					for (it = vChans.begin(); it != vChans.end(); ++it) {
 						// Skip channels which are detached or we don't use keepbuffer
-						if (!(*it)->IsDetached() && !(*it)->KeepBuffer()) {
+						if (!(*it)->IsDetached() && (*it)->AutoClearChanBuffer()) {
 							(*it)->ClearBuffer();
 						}
 					}
