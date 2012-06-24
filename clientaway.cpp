@@ -150,5 +150,5 @@ template<> void TModInfo<CClientAwayMod>(CModInfo& Info) {
 	Info.AddType(CModInfo::NetworkModule);
 }
 
-MODULEDEFS(CClientAwayMod, "This module allows you to set clients away independently, and auto away")
+USERMODULEDEFS(CClientAwayMod, "This module allows you to set clients away independently, and auto away")
 
