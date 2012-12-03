@@ -11,16 +11,25 @@
 
 class CPrivMsgMod : public CModule {
 public:
-	MODCONSTRUCTOR(CPrivMsgMod) {}
+        MODCONSTRUCTOR(CPrivMsgMod) {}
 
-	virtual EModRet OnUserMsg(CString& sTarget, CString& sMessage) {
-		if (m_pNetwork && m_pNetwork->GetIRCSock() && !m_pNetwork->IsChan(sTarget)) {
-			m_pNetwork->PutUser(":" + m_pNetwork->GetIRCNick().GetNickMask() + " PRIVMSG " + sTarget + " :" + sMessage, NULL, m_pClient);
-		}
+        virtual EModRet OnUserMsg(CString& sTarget, CString& sMessage) {
+                if (m_pNetwork && m_pNetwork->GetIRCSock() && !m_pNetwork->IsChan(sTarget)) {
+                        m_pNetwork->PutUser(":" + m_pNetwork->GetIRCNick().GetNickMask() + " PRIVMSG " + sTarget + " :" + sMessage, NULL, m_pClient);
+                }
 
-		return CONTINUE;
-	}
+                return CONTINUE;
+        }
+
+        virtual EModRet OnUserAction(CString& sTarget, CString& sMessage) {
+                if (m_pNetwork && m_pNetwork->GetIRCSock() && !m_pNetwork->IsChan(sTarget)) {
+                        m_pNetwork->PutUser(":" + m_pNetwork->GetIRCNick().GetNickMask() + " PRIVMSG " + sTarget + " :\x01" + "ACTION " + sMessage + "\x01", NULL, m_pClient);
+                }
+
+                return CONTINUE;
+        }
+
 };
 
-USERMODULEDEFS(CPrivMsgMod, "Send outgoing privmsgs to other clients")
+USERMODULEDEFS(CPrivMsgMod, "Send outgoing PRIVMSGs and CTCP ACTIONs to other clients")
 
