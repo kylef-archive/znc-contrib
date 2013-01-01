@@ -9,6 +9,8 @@
 #include <znc/IRCNetwork.h>
 #include <znc/Modules.h>
 
+using std::vector;
+
 #define ISIGNORED(NICK, TYPE) if (IsIgnored(NICK, TYPE)) {  \
 			return HALT;  \
 		}  \

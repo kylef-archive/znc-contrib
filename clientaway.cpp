@@ -11,6 +11,8 @@
 #include <znc/IRCNetwork.h>
 #include <znc/Chan.h>
 
+using std::vector;
+
 #define AWAY_DEFAULT_REASON "Auto away at %time%"
 
 class CClientAwayMod : public CModule {
