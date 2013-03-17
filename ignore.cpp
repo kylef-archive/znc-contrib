@@ -196,4 +196,4 @@ protected:
 	vector<CIgnore> m_vIgnores;
 };
 
-NETWORKMODULEDEFS(CIgnoreMod, "Ignore a hostask")
+NETWORKMODULEDEFS(CIgnoreMod, "Ignore a hostmask")
