@@ -35,6 +35,28 @@ public:
 		return GetNV("autoaway").ToBool();
 	}
 
+	void ListCommand(const CString &sLine) {
+		CTable Table;
+		Table.AddColumn("Host");
+		Table.AddColumn("Network");
+		Table.AddColumn("Away");
+
+		const vector<CClient*> vClients = m_pUser->GetAllClients();
+
+		for (vector<CClient*>::const_iterator it = vClients.begin(); it != vClients.end(); ++it) {
+			CClient *pClient = *it;
+
+			Table.AddRow();
+			Table.SetCell("Host", pClient->GetRemoteIP());
+			if (pClient->GetNetwork()) {
+				Table.SetCell("Network", pClient->GetNetwork()->GetName());
+			}
+			Table.SetCell("Away", CString(pClient->IsAway()));
+		}
+
+		PutModule(Table);
+	}
+
 	void SetAwayReasonCommand(const CString &sLine) {
 		CString sReason = sLine.Token(1, true);
 
@@ -56,12 +78,38 @@ public:
 		}
 	}
 
+	void SetAwayCommand(const CString &sLine) {
+		const vector<CClient*> vClients = m_pUser->GetAllClients();
+
+		CString sHostname = sLine.Token(1);
+		unsigned int count = 0;
+
+		for (vector<CClient*>::const_iterator it = vClients.begin(); it != vClients.end(); ++it) {
+			CClient *pClient = *it;
+
+			if (pClient->GetRemoteIP().Equals(sHostname)) {
+				pClient->SetAway(true);
+				++count;
+			}
+		}
+
+		if (count == 1) {
+			PutModule(CString(count) + " client has been set away");
+		} else {
+			PutModule(CString(count) + " clients have been set away");
+		}
+	}
+
 	MODCONSTRUCTOR(CClientAwayMod) {
 		AddHelpCommand();
+		AddCommand("List", static_cast<CModCommand::ModCmdFunc>(&CClientAwayMod::ListCommand),
+			"", "List all clients");
 		AddCommand("Reason", static_cast<CModCommand::ModCmdFunc>(&CClientAwayMod::SetAwayReasonCommand),
 			"[reason]", "Prints and optionally sets the away reason.");
 		AddCommand("AutoAway", static_cast<CModCommand::ModCmdFunc>(&CClientAwayMod::AutoAwayCommand),
 			"yes or no", "Should we auto away you when the last client goes away or disconnects");
+		AddCommand("SetAway", static_cast<CModCommand::ModCmdFunc>(&CClientAwayMod::SetAwayCommand),
+				"hostname", "Set any clients matching hostname as away/unaway");
 	}
 
 	virtual void OnClientLogin() {
