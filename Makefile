@@ -5,7 +5,7 @@ SRCEXTEN=.cpp
 
 SRCFILES=clientaway.cpp ignore.cpp privmsg.cpp
 
-MODDIR=.znc/modules
+MODDIR=~/.znc/modules
 
 all: 
 	@$(MC) $(SRCFILES)
