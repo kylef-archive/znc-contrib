@@ -124,6 +124,8 @@ public:
 		CIgnore Ignore(sHostmask, sType);
 		m_vIgnores.push_back(Ignore);
 
+		Save();
+
 		PutModule("Ignore added (" + Ignore.GetHostmask() + ")");
 	}
 
@@ -141,6 +143,8 @@ public:
 				++it;
 			}
 		}
+
+		Save();
 
 		unsigned int uiRemoved = uiIgnores - m_vIgnores.size();
 		PutModule(CString(uiRemoved) + " hostmask" + (uiRemoved == 1? "" : "s") + " deleted.");
@@ -175,6 +179,12 @@ public:
 		return false;
 	}
 
+	virtual bool OnLoad(const CString& sArgs, CString& sMessage) {
+		Load();
+
+		return true;
+	}
+
 	virtual EModRet OnPrivMsg(CNick& Nick, CString& sMessage) {
 		ISIGNORED(Nick, "privmsg");
 	}
@@ -197,6 +207,74 @@ public:
 
 	virtual EModRet OnChanCTCP(CNick& Nick, CChan& Channel, CString& sMessage) {
 		ISIGNORED(Nick, "ctcp");
+	}
+
+	/* Serialization */
+
+	CString GetConfigPath() const {
+		return (GetSavePath() + "/ignore.conf");
+	}
+
+	void Load() {
+		if (!CFile::Exists(GetConfigPath())) {
+			DEBUG("ignore: Config file doesn't exist");
+			return;
+		}
+
+		if (!CFile::IsReg(GetConfigPath())) {
+			DEBUG("ignore: Config file isn't a file");
+			return;
+		}
+
+		CFile *pFile = new CFile(GetConfigPath());
+		if (!pFile->Open(GetConfigPath(), O_RDONLY)) {
+			DEBUG("ignore: Error opening config file");
+			delete pFile;
+			return;
+		}
+
+		if (!pFile->Seek(0)) {
+			DEBUG("ignore: Error, can't seek to start of config file.");
+			delete pFile;
+			return;
+		}
+
+		m_vIgnores.clear();
+
+		CString sLine;
+
+		while (pFile->ReadLine(sLine)) {
+			sLine.TrimLeft();
+			sLine.TrimRight("\n");
+
+			CIgnore Ignore = CIgnore(sLine);
+			m_vIgnores.push_back(Ignore);
+		}
+	}
+
+	void Save() const {
+		CFile *pFile = new CFile(GetConfigPath());
+
+		if (!pFile->Open(O_WRONLY | O_CREAT | O_TRUNC, 0600)) {
+			DEBUG("ignore: Failed to save `" + GetConfigPath() + "` `" + CString(strerror(errno)) + "`");
+			delete pFile;
+			return;
+		}
+
+		for (vector<CIgnore>::const_iterator it = m_vIgnores.begin(); it != m_vIgnores.end(); ++it) {
+			CIgnore Ignore = *it;
+
+			pFile->Write(Ignore.ToString());
+		}
+
+		pFile->Sync();
+
+		if (pFile->HadError()) {
+			DEBUG("ignore: Failed to save `" + GetConfigPath() + "` `" + CString(strerror(errno)) + "`");
+			pFile->Delete();
+		}
+
+		delete pFile;
 	}
 
 protected:
