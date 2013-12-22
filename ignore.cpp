@@ -43,9 +43,16 @@ public:
 		m_sType = sString.Token(1);
 	}
 
+	bool IsTypeMatch(const CString& sType) const {
+		return GetType().Equals("all") || GetType().Equals(sType);
+	}
+
+	bool IsNickMatch(const CNick& Nick) const {
+		return Nick.GetHostMask().AsLower().WildCmp(m_sHostMask.AsLower());
+	}
+
 	bool IsMatch(const CNick& Nick, const CString& sType) const {
-		return (GetType().Equals("all") || GetType().Equals(sType)) &&
-			   (Nick.GetHostMask().WildCmp(m_sHostMask));
+		return (IsTypeMatch(sType) && IsNickMatch(Nick));
 	}
 
 	const CString ToString() const {
