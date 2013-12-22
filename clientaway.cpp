@@ -87,7 +87,7 @@ public:
 		for (vector<CClient*>::const_iterator it = vClients.begin(); it != vClients.end(); ++it) {
 			CClient *pClient = *it;
 
-			if (pClient->GetRemoteIP().Equals(sHostname)) {
+			if (sHostname.empty() || pClient->GetRemoteIP().Equals(sHostname)) {
 				pClient->SetAway(true);
 				++count;
 			}
