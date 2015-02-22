@@ -10,7 +10,9 @@
 #include <znc/User.h>
 #include <znc/IRCNetwork.h>
 #include <znc/Chan.h>
-
+#if (VERSION_MAJOR >= 1) && (VERSION_MINOR >= 5)
+#include <znc/Query.h>
+#endif
 using std::vector;
 
 #define AWAY_DEFAULT_REASON "Auto away at %time%"
@@ -149,7 +151,13 @@ public:
 						}
 					}
 
+#if (VERSION_MAJOR >= 1) && (VERSION_MINOR >= 5)
+					for (CQuery* pQuery : m_pNetwork->GetQueries()) {
+						m_pNetwork->DelQuery(pQuery->GetName());
+					}
+#else
 					m_pNetwork->ClearQueryBuffer();
+#endif
 
 					if (GetAutoAway() && m_pNetwork->IsIRCAway()) {
 						PutIRC("AWAY");
