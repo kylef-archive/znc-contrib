@@ -88,13 +88,13 @@ public:
 		// Valid value of true or false for setting away/unaway
 		bool sToggleFlag = true;
 		CString sToggleValue = "away";
+        VCString sReturn;
 
-		if (sLine.Split(" ",,false)).Equals(2) {
-			sToggleFlag = sLine.Token(2).ToBool();
-			if (!sToggleFlag) {
-				sToggleValue = "unaway";
-			}
-		}
+        // If the hostname argument isn't passed and only arg is true/false, treat that as sToggleFlag
+		if (sHostname.AsLower() == "true" || sHostname.AsLower() == "false" ) {
+			sToggleFlag = sHostname.ToBool();
+            sHostname = "";
+        }
 
 		unsigned int count = 0;
 
@@ -103,12 +103,21 @@ public:
 
 			//Set all hosts to away if we encounter an empty hostname
 			//Otherwise, set the flag to the provided second argument value
+            if (pClient->GetRemoteIP().Equals(sHostname)) {
+                if (sLine.Token(2).empty()) {
+                    sToggleFlag = !pClient->IsAway();
+                } else {
+                    sToggleFlag = sLine.Token(2).ToBool();
+                }
+            }
 			if (sHostname.empty() || pClient->GetRemoteIP().Equals(sHostname)) {
-//				pClient->SetAway(true);
 				pClient->SetAway(sToggleFlag);
 				++count;
-			}
+            }
 		}
+        if (!sToggleFlag) {
+            sToggleValue = "unaway";
+        }
 
 		if (count == 1) {
 			PutModule(CString(count) + " client has been set " + sToggleValue);
