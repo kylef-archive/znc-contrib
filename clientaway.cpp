@@ -84,21 +84,36 @@ public:
 		const vector<CClient*> vClients = m_pUser->GetAllClients();
 
 		CString sHostname = sLine.Token(1);
+
+		// Valid value of true or false for setting away/unaway
+		bool sToggleFlag = true;
+		CString sToggleValue = "away";
+
+		if (sLine.Split(" ",null,false)) == 2 {
+			sToggleFlag = sLine.Token(2).ToBool();
+			if (!sToggleFlag) {
+				sToggleValue = "unaway";
+			}
+		}
+
 		unsigned int count = 0;
 
 		for (vector<CClient*>::const_iterator it = vClients.begin(); it != vClients.end(); ++it) {
 			CClient *pClient = *it;
 
+			//Set all hosts to away if we encounter an empty hostname
+			//Otherwise, set the flag to the provided second argument value
 			if (sHostname.empty() || pClient->GetRemoteIP().Equals(sHostname)) {
-				pClient->SetAway(true);
+//				pClient->SetAway(true);
+				pClient=>SetAway(sToggleFlag);
 				++count;
 			}
 		}
 
 		if (count == 1) {
-			PutModule(CString(count) + " client has been set away");
+			PutModule(CString(count) + " client has been set " + sToggleValue);
 		} else {
-			PutModule(CString(count) + " clients have been set away");
+			PutModule(CString(count) + " clients have been set " + sToggleValue);
 		}
 	}
 
@@ -209,4 +224,3 @@ template<> void TModInfo<CClientAwayMod>(CModInfo& Info) {
 }
 
 USERMODULEDEFS(CClientAwayMod, "This module allows you to set clients away independently, and auto away")
-
