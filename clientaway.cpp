@@ -89,7 +89,7 @@ public:
 		bool sToggleFlag = true;
 		CString sToggleValue = "away";
 
-		if (sLine.Split(" ",null,false)) == 2 {
+		if (sLine.Split(" ",,false)).Equals(2) {
 			sToggleFlag = sLine.Token(2).ToBool();
 			if (!sToggleFlag) {
 				sToggleValue = "unaway";
@@ -105,7 +105,7 @@ public:
 			//Otherwise, set the flag to the provided second argument value
 			if (sHostname.empty() || pClient->GetRemoteIP().Equals(sHostname)) {
 //				pClient->SetAway(true);
-				pClient=>SetAway(sToggleFlag);
+				pClient->SetAway(sToggleFlag);
 				++count;
 			}
 		}
