@@ -10,6 +10,9 @@
 #include <znc/User.h>
 #include <znc/IRCNetwork.h>
 #include <znc/Chan.h>
+#if (VERSION_MAJOR >= 1) && (VERSION_MINOR == 6)
+#include <znc/Query.h>
+#endif
 
 using std::vector;
 
@@ -149,7 +152,11 @@ public:
 						}
 					}
 
+#if (VERSION_MAJOR >= 1) && (VERSION_MINOR == 6)
+          std::for_each(GetNetwork()->GetQueries().begin(), GetNetwork()->GetQueries().end(), std::default_delete<CQuery>());
+#else
 					m_pNetwork->ClearQueryBuffer();
+#endif
 
 					if (GetAutoAway() && m_pNetwork->IsIRCAway()) {
 						PutIRC("AWAY");
