@@ -6,6 +6,8 @@
  * by the Free Software Foundation.
  */
 
+#include <algorithm>
+#include <memory>
 #include <znc/Modules.h>
 #include <znc/User.h>
 #include <znc/IRCNetwork.h>
